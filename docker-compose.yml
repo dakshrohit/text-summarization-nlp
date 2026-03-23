@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  text-summarizer:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+      - DEBUG=False
+      - MODEL_PATH=artifacts/model_trainer/pegasus-samsum-model
+      - TOKENIZER_PATH=artifacts/model_trainer/tokenizer
+    volumes:
+      - ./artifacts:/app/artifacts
+      - ./logs:/app/logs
+    container_name: text-summarizer-api
+    command: python app.py
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
